@@ -52,6 +52,7 @@ const setup = async () => {
   const unmatchcontainer = document.querySelector("#unmatch");
   const timerContainer = document.querySelector("#timer");
   const startButton = document.querySelector("#start");
+  const resetButton = document.querySelector("#reset");
   let seconds = 0;
   let timerInterval = null;
 
@@ -69,6 +70,38 @@ const setup = async () => {
     }, 1000);
   }
   startButton.addEventListener("click", startTimer);
+  resetButton.addEventListener("click", () => {
+    clearInterval(timerInterval);
+    seconds = 0;
+    timerContainer.innerHTML = `Time: ${seconds} seconds`;
+
+    // Reset the number of clicks
+    numclicks = 0;
+    stepcontainer.innerHTML = `Number of clicks: ${numclicks}`;
+
+    // Reset the number of matched pairs
+    nummatched = 0;
+    matchcontainer.innerHTML = `Matched pairs of card:: ${nummatched}`;
+
+    // Reset the number of unmatched pairs
+    numunmatched = 3;
+    unmatchcontainer.innerHTML = `Unmatched pairs of cards: ${numunmatched}`;
+
+    // Reset the number of pairs
+    numpairs = 3;
+
+    // Reset the cards
+    $(".card").removeClass("flip");
+    $(".card").on("click");
+
+    // Reset the images
+    cardFronts[0].src = randomPokemonImageUrl1;
+    cardFronts[1].src = randomPokemonImageUrl2;
+    cardFronts[2].src = randomPokemonImageUrl3;
+    cardFronts[randomIndex1].src = randomPokemonImageUrl1;
+    cardFronts[randomIndex2].src = randomPokemonImageUrl2;
+    cardFronts[randomIndex3].src = randomPokemonImageUrl3;
+  });
 
   // Flip the card when clicked
   let firstCard = undefined;
