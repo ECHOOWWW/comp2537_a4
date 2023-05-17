@@ -42,7 +42,6 @@ const setup = async () => {
   cardFronts[randomIndex2].src = randomPokemonImageUrl2;
   cardFronts[randomIndex3].src = randomPokemonImageUrl3;
 
-  // Set the src attribute of the front face img elements to the random Pokemon images
   let firstCard = undefined;
   let secondCard = undefined;
   $(".card").on("click", function () {
@@ -55,11 +54,15 @@ const setup = async () => {
         console.log("match");
         $(`#${firstCard.id}`).parent().off("click");
         $(`#${secondCard.id}`).parent().off("click");
+        firstCard = undefined;
+        secondCard = undefined;
       } else {
         console.log("no match");
         setTimeout(() => {
           $(`#${firstCard.id}`).parent().toggleClass("flip");
           $(`#${secondCard.id}`).parent().toggleClass("flip");
+          firstCard = undefined;
+          secondCard = undefined;
         }, 1000);
       }
     }
