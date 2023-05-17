@@ -42,6 +42,7 @@ const setup = async () => {
   cardFronts[randomIndex2].src = randomPokemonImageUrl2;
   cardFronts[randomIndex3].src = randomPokemonImageUrl3;
 
+  // update the information on the page
   let numclicks = 0;
   let numpairs = 3;
   let nummatched = 0;
@@ -50,49 +51,10 @@ const setup = async () => {
   const matchcontainer = document.querySelector("#match");
   const unmatchcontainer = document.querySelector("#unmatch");
   const timerContainer = document.querySelector("#timer");
+  const startButton = document.querySelector("#start");
   let seconds = 0;
   let timerInterval = null;
 
-  let firstCard = undefined;
-  let secondCard = undefined;
-
-  $(".card").on("click", function () {
-    if (nummatched === numpairs) {
-      return; // Don't do anything if all cards have been matched
-    }
-
-    if (numclicks === 0) {
-      startTimer();
-    }
-    numclicks += 1;
-    stepcontainer.innerHTML = `Number of clicks: ${numclicks}`; // Update the number of clicks
-    $(this).toggleClass("flip");
-    if (!firstCard) firstCard = $(this).find(".front_face")[0];
-    else {
-      secondCard = $(this).find(".front_face")[0];
-      console.log(firstCard, secondCard);
-      if (firstCard.src == secondCard.src) {
-        nummatched += 1;
-        numunmatched -= 1;
-        matchcontainer.innerHTML = `Matched pairs of card:: ${nummatched}`;
-        unmatchcontainer.innerHTML = `Unmatched pairs of cards: ${numunmatched}`;
-        $(`#${firstCard.id}`).parent().off("click");
-        $(`#${secondCard.id}`).parent().off("click");
-        firstCard = undefined;
-        secondCard = undefined;
-      } else {
-        setTimeout(() => {
-          $(`#${firstCard.id}`).parent().toggleClass("flip");
-          $(`#${secondCard.id}`).parent().toggleClass("flip");
-          firstCard = undefined;
-          secondCard = undefined;
-        }, 1000);
-      }
-      if (nummatched === numpairs) {
-        stopTimer();
-      }
-    }
-  });
   function startTimer() {
     timerInterval = setInterval(() => {
       seconds++;
@@ -102,7 +64,54 @@ const setup = async () => {
 
   function stopTimer() {
     clearInterval(timerInterval);
+    setTimeout(() => {
+      alert(`You won in ${seconds} seconds!`);
+    }, 1000);
   }
+  startButton.addEventListener("click", startTimer);
+
+  // Flip the card when clicked
+  let firstCard = undefined;
+  let secondCard = undefined;
+  let isCardClickable = true;
+
+  $(".card").on("click", function () {
+    if (!isCardClickable) return;
+    numclicks += 1;
+    stepcontainer.innerHTML = `Number of clicks: ${numclicks}`; // Update the number of clicks
+    $(this).toggleClass("flip");
+    if (!firstCard) firstCard = $(this).find(".front_face")[0];
+    else {
+      secondCard = $(this).find(".front_face")[0];
+      if (firstCard === secondCard) {
+        firstCard = undefined;
+        secondCard = undefined;
+        return; // Exit the function without making the card unclickable
+      }
+      if (firstCard.src == secondCard.src) {
+        matchcontainer.innerHTML = `Matched pairs of card:: ${nummatched}`;
+        unmatchcontainer.innerHTML = `Unmatched pairs of cards: ${numunmatched}`;
+        $(`#${firstCard.id}`).parent().off("click");
+        $(`#${secondCard.id}`).parent().off("click");
+        nummatched += 1;
+        numunmatched -= 1;
+        firstCard = undefined;
+        secondCard = undefined;
+      } else {
+        isCardClickable = false;
+        setTimeout(() => {
+          $(`#${firstCard.id}`).parent().toggleClass("flip");
+          $(`#${secondCard.id}`).parent().toggleClass("flip");
+          firstCard = undefined;
+          secondCard = undefined;
+          isCardClickable = true;
+        }, 1000);
+      }
+      if (nummatched === numpairs) {
+        stopTimer();
+      }
+    }
+  });
 };
 
 $(document).ready(setup);
