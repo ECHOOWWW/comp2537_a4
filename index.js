@@ -42,22 +42,45 @@ const setup = async () => {
   cardFronts[randomIndex2].src = randomPokemonImageUrl2;
   cardFronts[randomIndex3].src = randomPokemonImageUrl3;
 
+  let numclicks = 0;
+  let numpairs = 3;
+  let nummatched = 0;
+  let numunmatched = 3;
+  const stepcontainer = document.querySelector("#step");
+  const matchcontainer = document.querySelector("#match");
+  const unmatchcontainer = document.querySelector("#unmatch");
+  const timerContainer = document.querySelector("#timer");
+  let seconds = 0;
+  let timerInterval = null;
+
   let firstCard = undefined;
   let secondCard = undefined;
+
   $(".card").on("click", function () {
+    if (nummatched === numpairs) {
+      return; // Don't do anything if all cards have been matched
+    }
+
+    if (numclicks === 0) {
+      startTimer();
+    }
+    numclicks += 1;
+    stepcontainer.innerHTML = `Number of clicks: ${numclicks}`; // Update the number of clicks
     $(this).toggleClass("flip");
     if (!firstCard) firstCard = $(this).find(".front_face")[0];
     else {
       secondCard = $(this).find(".front_face")[0];
       console.log(firstCard, secondCard);
       if (firstCard.src == secondCard.src) {
-        console.log("match");
+        nummatched += 1;
+        numunmatched -= 1;
+        matchcontainer.innerHTML = `Matched pairs of card:: ${nummatched}`;
+        unmatchcontainer.innerHTML = `Unmatched pairs of cards: ${numunmatched}`;
         $(`#${firstCard.id}`).parent().off("click");
         $(`#${secondCard.id}`).parent().off("click");
         firstCard = undefined;
         secondCard = undefined;
       } else {
-        console.log("no match");
         setTimeout(() => {
           $(`#${firstCard.id}`).parent().toggleClass("flip");
           $(`#${secondCard.id}`).parent().toggleClass("flip");
@@ -65,8 +88,21 @@ const setup = async () => {
           secondCard = undefined;
         }, 1000);
       }
+      if (nummatched === numpairs) {
+        stopTimer();
+      }
     }
   });
+  function startTimer() {
+    timerInterval = setInterval(() => {
+      seconds++;
+      timerContainer.innerHTML = `Time: ${seconds} seconds`;
+    }, 1000);
+  }
+
+  function stopTimer() {
+    clearInterval(timerInterval);
+  }
 };
 
 $(document).ready(setup);
