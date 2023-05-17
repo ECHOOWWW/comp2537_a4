@@ -35,6 +35,9 @@ const setup = async () => {
       randomIndex3 = Math.floor(Math.random() * 3 + 3);
     }
   }
+  while (randomIndex3 === randomIndex1 || randomIndex3 === randomIndex2) {
+    randomIndex3 = Math.floor(Math.random() * 3 + 3);
+  }
   cardFronts[randomIndex1].src = randomPokemonImageUrl1;
   cardFronts[randomIndex2].src = randomPokemonImageUrl2;
   cardFronts[randomIndex3].src = randomPokemonImageUrl3;
