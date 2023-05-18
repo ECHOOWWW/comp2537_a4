@@ -172,7 +172,7 @@ const setup = async () => {
   // Flip the card when clicked
   $("#game_grid").on("click", ".card", function () {
     if (!isTimerRunning) startTimer();
-    if (!isCardClickable) return;
+    if (!isCardClickable || $(this).hasClass("matched")) return;
     numclicks += 1;
     stepcontainer.innerHTML = `Number of clicks: ${numclicks}`; // Update the number of clicks
     $(this).toggleClass("flip");
@@ -189,8 +189,8 @@ const setup = async () => {
         numunmatched -= 1;
         matchcontainer.innerHTML = `Matched pairs of card: ${nummatched}`;
         unmatchcontainer.innerHTML = `Unmatched pairs of cards: ${numunmatched}`;
-        $(`#${firstCard.id}`).parent().off("click");
-        $(`#${secondCard.id}`).parent().off("click");
+        $(`#${firstCard.id}`).parent().addClass("matched");
+        $(`#${secondCard.id}`).parent().addClass("matched");
         firstCard = undefined;
         secondCard = undefined;
       } else {
