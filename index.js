@@ -5,6 +5,7 @@ const setup = async () => {
   const difficultyGroup = document.getElementById("difficulty");
   const startButton = document.querySelector("#start");
   const stepcontainer = document.querySelector("#step");
+  const totalpairscontainer = document.querySelector("#total_pair");
   const matchcontainer = document.querySelector("#match");
   const unmatchcontainer = document.querySelector("#unmatch");
   const timerContainer = document.querySelector("#timer");
@@ -103,6 +104,8 @@ const setup = async () => {
       nummatched = 0;
       matchcontainer.innerHTML = `Matched pairs of card: ${nummatched}`;
 
+      totalpairscontainer.innerHTML = `Total pairs of cards: ${numpairs}`;
+
       // Reset the number of unmatched pairs
       numunmatched = numpairs;
       unmatchcontainer.innerHTML = `Unmatched pairs of cards: ${numunmatched}`;
@@ -172,7 +175,7 @@ const setup = async () => {
   // Flip the card when clicked
   $("#game_grid").on("click", ".card", function () {
     if (!isTimerRunning) startTimer();
-    if (!isCardClickable) return;
+    if (!isCardClickable || $(this).hasClass("matched")) return;
     numclicks += 1;
     stepcontainer.innerHTML = `Number of clicks: ${numclicks}`; // Update the number of clicks
     $(this).toggleClass("flip");
@@ -189,8 +192,8 @@ const setup = async () => {
         numunmatched -= 1;
         matchcontainer.innerHTML = `Matched pairs of card: ${nummatched}`;
         unmatchcontainer.innerHTML = `Unmatched pairs of cards: ${numunmatched}`;
-        $(`#${firstCard.id}`).parent().off("click");
-        $(`#${secondCard.id}`).parent().off("click");
+        $(`#${firstCard.id}`).parent().addClass("matched");
+        $(`#${secondCard.id}`).parent().addClass("matched");
         firstCard = undefined;
         secondCard = undefined;
       } else {
