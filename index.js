@@ -1,62 +1,129 @@
 const setup = async () => {
-  const cardFronts = document.querySelectorAll(".front_face");
-
-  // Fetch 3 random Pokemon images
-  const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=810");
-  const data = await response.json();
-  const randomPokemon1 =
-    data.results[Math.floor(Math.random() * data.results.length)];
-  const randomPokemon2 =
-    data.results[Math.floor(Math.random() * data.results.length)];
-  const randomPokemon3 =
-    data.results[Math.floor(Math.random() * data.results.length)];
-  const randomPokemonResponse1 = await fetch(randomPokemon1.url);
-  const randomPokemonResponse2 = await fetch(randomPokemon2.url);
-  const randomPokemonResponse3 = await fetch(randomPokemon3.url);
-  const randomPokemonData1 = await randomPokemonResponse1.json();
-  const randomPokemonData2 = await randomPokemonResponse2.json();
-  const randomPokemonData3 = await randomPokemonResponse3.json();
-  const randomPokemonImageUrl1 = randomPokemonData1.sprites.front_default;
-  const randomPokemonImageUrl2 = randomPokemonData2.sprites.front_default;
-  const randomPokemonImageUrl3 = randomPokemonData3.sprites.front_default;
-
-  // Set the src attribute of the front face img elements to the random Pokemon images
-  cardFronts[0].src = randomPokemonImageUrl1;
-  cardFronts[1].src = randomPokemonImageUrl2;
-  cardFronts[2].src = randomPokemonImageUrl3;
-
-  // Select 2 random front face img elements and set their src attributes to the same random Pokemon image
-  const randomIndex1 = Math.floor(Math.random() * 3 + 3);
-  let randomIndex2 = Math.floor(Math.random() * 3 + 3);
-  let randomIndex3 = Math.floor(Math.random() * 3 + 3);
-  while (randomIndex2 === randomIndex1) {
-    randomIndex2 = Math.floor(Math.random() * 3 + 3);
-    while (randomIndex3 === randomIndex1 || randomIndex3 === randomIndex2) {
-      randomIndex3 = Math.floor(Math.random() * 3 + 3);
-    }
-  }
-  while (randomIndex3 === randomIndex1 || randomIndex3 === randomIndex2) {
-    randomIndex3 = Math.floor(Math.random() * 3 + 3);
-  }
-  cardFronts[randomIndex1].src = randomPokemonImageUrl1;
-  cardFronts[randomIndex2].src = randomPokemonImageUrl2;
-  cardFronts[randomIndex3].src = randomPokemonImageUrl3;
-
-  // update the information on the page
-  let numclicks = 0;
-  let numpairs = 3;
-  let nummatched = 0;
-  let numunmatched = 3;
+  const container = document.querySelector("#game_grid");
+  let difficulty;
+  let numpairs;
+  const difficultyGroup = document.getElementById("difficulty");
+  const startButton = document.querySelector("#start");
   const stepcontainer = document.querySelector("#step");
   const matchcontainer = document.querySelector("#match");
   const unmatchcontainer = document.querySelector("#unmatch");
   const timerContainer = document.querySelector("#timer");
-  const startButton = document.querySelector("#start");
   const resetButton = document.querySelector("#reset");
+  const powerupButton = document.querySelector("#powerup");
+  let numclicks = 0;
+  let nummatched = 0;
+  let numunmatched = 0;
   let seconds = 0;
   let timerInterval = null;
+  let isTimerRunning = false;
+  let firstCard = undefined;
+  let secondCard = undefined;
+  let isCardClickable = true;
+
+  startButton.addEventListener("click", async () => {
+    const checkedBox = difficultyGroup.querySelector(
+      "input[type='checkbox']:checked"
+    );
+
+    if (checkedBox) {
+      difficulty = checkedBox.value;
+      console.log("Difficulty:", difficulty);
+      switch (difficulty) {
+        case "easy":
+          numpairs = 4;
+          break;
+        case "medium":
+          numpairs = 6;
+          break;
+        case "hard":
+          numpairs = 8;
+          break;
+      }
+
+      container.innerHTML = "";
+      for (let i = 0; i < numpairs * 2; i++) {
+        const card = document.createElement("div");
+        card.classList.add("card");
+        const frontFace = document.createElement("img");
+        frontFace.classList.add("front_face");
+        frontFace.id = `img${i + 1}`;
+        frontFace.src = "";
+        const backFace = document.createElement("img");
+        backFace.classList.add("back_face");
+        backFace.src = "back.webp";
+        card.appendChild(frontFace);
+        card.appendChild(backFace);
+        container.appendChild(card);
+      }
+
+      const response = await fetch(
+        "https://pokeapi.co/api/v2/pokemon?limit=810"
+      );
+      const data = await response.json();
+      randomPokemonUrls = [];
+      for (let k = 0; k < numpairs; k++) {
+        const randomPokemon =
+          data.results[Math.floor(Math.random() * data.results.length)];
+        const randomPokemonResponse = await fetch(randomPokemon.url);
+        const randomPokemonData = await randomPokemonResponse.json();
+        const randomPokemonImageUrl = randomPokemonData.sprites.front_default;
+        randomPokemonUrls.push(randomPokemonImageUrl);
+      }
+      const usedIndices = [];
+
+      for (let j = 0; j < numpairs; j++) {
+        let randomIndex1 = getRandomIndex();
+        while (usedIndices.includes(randomIndex1)) {
+          randomIndex1 = getRandomIndex();
+        }
+        usedIndices.push(randomIndex1);
+
+        let randomIndex2 = getRandomIndex();
+        while (
+          usedIndices.includes(randomIndex2) ||
+          randomIndex2 === randomIndex1
+        ) {
+          randomIndex2 = getRandomIndex();
+        }
+        usedIndices.push(randomIndex2);
+
+        container.children[randomIndex1].children[0].src = randomPokemonUrls[j];
+        container.children[randomIndex2].children[0].src = randomPokemonUrls[j];
+      }
+
+      function getRandomIndex() {
+        return Math.floor(Math.random() * (numpairs * 2));
+      }
+
+      // Reset the number of clicks
+      numclicks = 0;
+      stepcontainer.innerHTML = `Number of clicks: ${numclicks}`;
+
+      // Reset the number of matched pairs
+      nummatched = 0;
+      matchcontainer.innerHTML = `Matched pairs of card: ${nummatched}`;
+
+      // Reset the number of unmatched pairs
+      numunmatched = numpairs;
+      unmatchcontainer.innerHTML = `Unmatched pairs of cards: ${numunmatched}`;
+
+      // Reset the timer
+      clearInterval(timerInterval);
+      seconds = 0;
+      timerContainer.innerHTML = `Time: ${seconds} seconds`;
+
+      // Reset the cards
+      $(".card").removeClass("flip");
+      $(".card").off("click");
+      isTimerRunning = false;
+      firstCard = undefined;
+      secondCard = undefined;
+      isCardClickable = true;
+    }
+  });
 
   function startTimer() {
+    isTimerRunning = true;
     timerInterval = setInterval(() => {
       seconds++;
       timerContainer.innerHTML = `Time: ${seconds} seconds`;
@@ -69,7 +136,7 @@ const setup = async () => {
       alert(`You won in ${seconds} seconds!`);
     }, 1000);
   }
-  startButton.addEventListener("click", startTimer);
+
   resetButton.addEventListener("click", () => {
     clearInterval(timerInterval);
     seconds = 0;
@@ -81,10 +148,10 @@ const setup = async () => {
 
     // Reset the number of matched pairs
     nummatched = 0;
-    matchcontainer.innerHTML = `Matched pairs of card:: ${nummatched}`;
+    matchcontainer.innerHTML = `Matched pairs of card: ${nummatched}`;
 
     // Reset the number of unmatched pairs
-    numunmatched = 3;
+    numunmatched = numpairs;
     unmatchcontainer.innerHTML = `Unmatched pairs of cards: ${numunmatched}`;
 
     // Reset the number of pairs
@@ -93,22 +160,18 @@ const setup = async () => {
     // Reset the cards
     $(".card").removeClass("flip");
     $(".card").on("click");
+  });
 
-    // Reset the images
-    cardFronts[0].src = randomPokemonImageUrl1;
-    cardFronts[1].src = randomPokemonImageUrl2;
-    cardFronts[2].src = randomPokemonImageUrl3;
-    cardFronts[randomIndex1].src = randomPokemonImageUrl1;
-    cardFronts[randomIndex2].src = randomPokemonImageUrl2;
-    cardFronts[randomIndex3].src = randomPokemonImageUrl3;
+  powerupButton.addEventListener("click", () => {
+    $(".card").addClass("flip");
+    setTimeout(() => {
+      $(".card").removeClass("flip");
+    }, 1500);
   });
 
   // Flip the card when clicked
-  let firstCard = undefined;
-  let secondCard = undefined;
-  let isCardClickable = true;
-
-  $(".card").on("click", function () {
+  $("#game_grid").on("click", ".card", function () {
+    if (!isTimerRunning) startTimer();
     if (!isCardClickable) return;
     numclicks += 1;
     stepcontainer.innerHTML = `Number of clicks: ${numclicks}`; // Update the number of clicks
@@ -122,12 +185,12 @@ const setup = async () => {
         return; // Exit the function without making the card unclickable
       }
       if (firstCard.src == secondCard.src) {
-        matchcontainer.innerHTML = `Matched pairs of card:: ${nummatched}`;
+        nummatched += 1;
+        numunmatched -= 1;
+        matchcontainer.innerHTML = `Matched pairs of card: ${nummatched}`;
         unmatchcontainer.innerHTML = `Unmatched pairs of cards: ${numunmatched}`;
         $(`#${firstCard.id}`).parent().off("click");
         $(`#${secondCard.id}`).parent().off("click");
-        nummatched += 1;
-        numunmatched -= 1;
         firstCard = undefined;
         secondCard = undefined;
       } else {
