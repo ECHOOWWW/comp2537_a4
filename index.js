@@ -33,10 +33,10 @@ const setup = async () => {
           numpairs = 4;
           break;
         case "medium":
-          numpairs = 6;
+          numpairs = 8;
           break;
         case "hard":
-          numpairs = 8;
+          numpairs = 12;
           break;
       }
 

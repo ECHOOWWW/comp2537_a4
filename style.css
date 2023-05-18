@@ -1,19 +1,33 @@
 body {
   margin: 0px;
+  font-family: 'Press Start 2P', cursive;
+  background-color: rgb(255, 236, 211) !important;
 }
+
+h3 {
+  font-family: 'Press Start 2P', cursive;
+}
+
 
 #game_info, #difficulty, #action {
   text-align: center;
+  margin-top: 20px;
+  font-family: 'Press Start 2P', cursive;
+
 }
 
 #game_grid {
-  border: 2px tomato solid;
   width: 800px;
   min-height: 400px;
   max-height: 800px;
   margin: 50px auto;
   display: flex;
   flex-wrap: wrap;
+}
+
+header {
+  display: flex;
+  justify-content: center;
 }
 
 

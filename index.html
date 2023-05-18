@@ -18,12 +18,17 @@
       integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
       crossorigin="anonymous"
     />
-    <script src="index.js"></script>
+    <!--import google fonts-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Carter+One&family=Press+Start+2P&display=swap" rel="stylesheet">    <script src="index.js"></script>
   </head>
 
   <body>
+    <header>    
+      <img src="logo.png" style="width: 400px;"></img>
+    </header>
     <div id="game_info">
-      <div id="game_title"><h1>Pokemon Card Game</h1></div>
       <h3>Information</h3>
       <div id="step"></div>
       <div id="total_pair"></div>
@@ -34,17 +39,17 @@
     <div id="difficulty">
       <h3>Difficulty</h3>
       <input type="checkbox" value="easy" />
-      <label for="easy">Easy</label>
+      <label for="easy"><h6>Easy</h6></label>
       <input type="checkbox" value="medium" />
-      <label for="medium">Medium</label>
+      <label for="medium"><h6>Medium</h6></label>
       <input type="checkbox" value="hard" />
-      <label for="hard">Hard</label>
+      <label for="hard"><h6>Hard</h6></label>
     </div>
     <div id="action">
       <h3>Actions</h3>
-      <button id="start">Start</button>
-      <button id="reset">Reset</button>
-      <button id="powerup">Power Up</button>
+      <button id="start" class="btn btn-success">Start</button>
+      <button id="reset" class="btn btn-danger">Reset</button>
+      <button id="powerup" class="btn btn-warning">Power Up</button>
     </div>
     <div id="game_grid"></div>
   </body>
