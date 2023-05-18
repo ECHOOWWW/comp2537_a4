@@ -5,6 +5,7 @@ const setup = async () => {
   const difficultyGroup = document.getElementById("difficulty");
   const startButton = document.querySelector("#start");
   const stepcontainer = document.querySelector("#step");
+  const totalpairscontainer = document.querySelector("#total_pair");
   const matchcontainer = document.querySelector("#match");
   const unmatchcontainer = document.querySelector("#unmatch");
   const timerContainer = document.querySelector("#timer");
@@ -102,6 +103,8 @@ const setup = async () => {
       // Reset the number of matched pairs
       nummatched = 0;
       matchcontainer.innerHTML = `Matched pairs of card: ${nummatched}`;
+
+      totalpairscontainer.innerHTML = `Total pairs of cards: ${numpairs}`;
 
       // Reset the number of unmatched pairs
       numunmatched = numpairs;
